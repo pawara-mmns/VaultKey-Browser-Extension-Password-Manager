@@ -1,17 +1,4 @@
-import type { CredentialSummary, CurrentSite, NavigationItem } from "../types";
-
-export const CURRENT_SITE_MOCK: CurrentSite = { hostname: "github.com" };
-
-export const MATCHING_CREDENTIALS_MOCK: CredentialSummary[] = [
-  {
-    id: "demo-github",
-    serviceName: "GitHub",
-    username: "user@example.com",
-    website: "github.com",
-    favorite: true,
-    accent: "var(--text-primary)",
-  },
-];
+import type { NavigationItem } from "../types";
 
 export const NAVIGATION_ITEMS: NavigationItem[] = [
   { id: "dashboard", label: "Dashboard", icon: "dashboard" },
