@@ -1,3 +1,10 @@
-// Phase 01 bootstrap only. Future lifecycle and secure vault services will live here.
-// Reading extension metadata keeps this entry point active without permissions or listeners.
-chrome.runtime.getManifest();
+import { initializeStorageAccess } from "../storage/storageAccess";
+import { clearSession } from "../security/session";
+
+// Keep initialization lightweight; unlocked key material lives in storage.session, not worker memory.
+void initializeStorageAccess();
+
+chrome.runtime.onInstalled.addListener(() => {
+  void initializeStorageAccess();
+  void clearSession();
+});
