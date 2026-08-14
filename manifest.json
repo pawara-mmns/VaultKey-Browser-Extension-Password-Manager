@@ -1,8 +1,11 @@
 {
   "manifest_version": 3,
   "name": "VaultKey Browser",
-  "version": "0.1.0",
-  "description": "A standalone local-first password manager browser extension foundation.",
+  "version": "0.2.0",
+  "description": "A standalone local-first password manager browser extension.",
+  "permissions": [
+    "storage"
+  ],
   "action": {
     "default_title": "Open VaultKey",
     "default_popup": "popup.html",
