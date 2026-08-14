@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
+import { AuthGate } from "../auth/AuthGate";
 import { Icon } from "../components/Icon";
 import { Sidebar } from "../components/Sidebar";
-import { UnlockPanel } from "../components/UnlockPanel";
 import { DashboardPage } from "../pages/DashboardPage";
 import { GeneratorPage } from "../pages/GeneratorPage";
 import { SecurityPage } from "../pages/SecurityPage";
@@ -17,8 +17,11 @@ function getInitialPage(): NavPage {
   return pageIds.has(hash) ? hash : "dashboard";
 }
 
-export function VaultApp() {
-  const [isUnlocked, setIsUnlocked] = useState(true);
+interface UnlockedVaultAppProps {
+  onLock: () => Promise<void>;
+}
+
+function UnlockedVaultApp({ onLock }: UnlockedVaultAppProps) {
   const [activePage, setActivePage] = useState<NavPage>(getInitialPage);
 
   useEffect(() => {
@@ -32,20 +35,16 @@ export function VaultApp() {
     window.history.replaceState(null, "", `#${page}`);
   };
 
-  if (!isUnlocked) {
-    return <UnlockPanel context="vault" onUnlock={() => setIsUnlocked(true)} />;
-  }
-
   return (
     <div className="vault-app">
-      <Sidebar activePage={activePage} onNavigate={navigate} onLock={() => setIsUnlocked(false)} />
+      <Sidebar activePage={activePage} onNavigate={navigate} onLock={() => void onLock()} />
       <div className="vault-app__main">
         <div className="topbar">
           <div className="topbar__breadcrumb">
             <span>VaultKey</span><Icon name="chevron" size={14} />
             <strong>{NAVIGATION_ITEMS.find((item) => item.id === activePage)?.label}</strong>
           </div>
-          <div className="topbar__status"><span className="status-dot" /> Local demo</div>
+          <div className="topbar__status"><span className="status-dot" /> Local vault</div>
         </div>
         <div className="page-scroll">
           {activePage === "dashboard" && <DashboardPage onNavigate={navigate} />}
@@ -56,5 +55,13 @@ export function VaultApp() {
         </div>
       </div>
     </div>
+  );
+}
+
+export function VaultApp() {
+  return (
+    <AuthGate context="vault">
+      {({ lock }) => <UnlockedVaultApp onLock={lock} />}
+    </AuthGate>
   );
 }
