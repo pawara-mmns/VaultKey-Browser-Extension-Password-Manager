@@ -12,7 +12,7 @@ interface DashboardPageProps {
 const stats = [
   { label: "Total passwords", value: "0", icon: "key" as const },
   { label: "Favorites", value: "0", icon: "star" as const },
-  { label: "Weak passwords", value: "0", icon: "shield" as const },
+  { label: "Weak passwords", value: "—", icon: "shield" as const },
 ];
 
 export function DashboardPage({ onNavigate }: DashboardPageProps) {
@@ -21,7 +21,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
       <PageHeader
         eyebrow="Overview"
         title={getGreeting()}
-        description="Your private space for passwords, built to stay on this device."
+        description="Your VaultKey vault is protected locally and ready for future credentials."
         actions={
           <Button leadingIcon={<Icon name="add" size={18} />} onClick={() => onNavigate("vault")}>
             Add password
@@ -35,7 +35,7 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
             <div className="stat-card__icon"><Icon name={stat.icon} size={20} /></div>
             <span>{stat.label}</span>
             <strong>{stat.value}</strong>
-            <small>Phase 01</small>
+            <small>Current vault</small>
           </article>
         ))}
       </section>
@@ -50,8 +50,8 @@ export function DashboardPage({ onNavigate }: DashboardPageProps) {
         </div>
         <EmptyState
           compact
-          title="No credentials yet"
-          description="Add your first password when secure storage is enabled in a later phase."
+          title="Your vault is ready"
+          description="Encrypted credentials will appear here when credential storage is enabled."
         />
       </section>
     </div>
