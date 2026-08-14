@@ -531,6 +531,12 @@ body,
   color: var(--warning);
 }
 
+.status-badge--success {
+  border-color: var(--success-border);
+  background: var(--success-soft);
+  color: var(--success);
+}
+
 .status-badge--neutral {
   border-color: var(--border);
   background: var(--white-04);
@@ -658,6 +664,14 @@ body,
 
 .unlock-panel--vault .unlock-panel__footer {
   margin-top: 22px;
+}
+
+.unlock-panel--vault.create-vault-view .unlock-panel__card {
+  width: min(100%, 485px);
+}
+
+.unlock-panel--vault.create-vault-view form {
+  gap: 14px;
 }
 
 @media (max-width: 980px) {
