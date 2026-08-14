@@ -30,7 +30,7 @@ export function Sidebar({ activePage, onNavigate, onLock }: SidebarProps) {
         </nav>
       </div>
       <div className="sidebar__footer">
-        <div className="sidebar__privacy"><span className="status-dot" /> Local demo mode</div>
+        <div className="sidebar__privacy"><span className="status-dot" /> Protected locally</div>
         <button className="sidebar__item" type="button" onClick={onLock}>
           <Icon name="lock" size={19} />
           <span>Lock Vault</span>
