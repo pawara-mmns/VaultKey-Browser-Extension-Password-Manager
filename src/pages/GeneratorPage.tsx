@@ -23,8 +23,8 @@ export function GeneratorPage() {
           <span className="phase-pill">Preview only</span>
         </div>
         <div className="generated-password">
-          <span aria-label="Hidden demo password">••••••••••••••••••••</span>
-          <button className="icon-button" type="button" aria-label="Copy unavailable in Phase 01" disabled>
+          <span aria-label="Hidden generator preview">••••••••••••••••••••</span>
+          <button className="icon-button" type="button" aria-label="Copy unavailable until Phase 03" disabled>
             <Icon name="copy" size={19} />
           </button>
         </div>

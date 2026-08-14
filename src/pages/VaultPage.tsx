@@ -33,8 +33,8 @@ export function VaultPage() {
         </div>
         <EmptyState
           title="Your vault is ready"
-          description="Encrypted credentials will appear here when secure storage arrives in Phase 02."
-          action={<span className="phase-pill">Storage not enabled</span>}
+          description="Encrypted credentials will appear here when credential storage arrives in Phase 04."
+          action={<span className="phase-pill">Coming in Phase 04</span>}
         />
       </section>
     </div>

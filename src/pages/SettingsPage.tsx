@@ -25,7 +25,7 @@ export function SettingsPage() {
           </article>
         ))}
       </section>
-      <div className="about-row"><span>VaultKey Browser</span><span>Phase 01 · v0.1.0</span></div>
+      <div className="about-row"><span>VaultKey Browser</span><span>Phase 02 · v0.2.0</span></div>
     </div>
   );
 }
