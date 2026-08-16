@@ -50,6 +50,11 @@ export interface DecryptedCredential extends CredentialMetadata, CredentialSecre
   id: string;
 }
 
+export interface CredentialSiteMetadata extends CredentialMetadata {
+  id: string;
+  hostname: string;
+}
+
 export interface CredentialInput {
   serviceName: string;
   username: string;
