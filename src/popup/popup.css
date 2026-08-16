@@ -180,9 +180,14 @@ body,
 .popup-credential-list .credential-row__copy span { font-size: 8px; }
 .popup-credential-list .button { min-height: 29px; padding: 0 8px; font-size: 9px; }
 .popup-credential-actions { display: flex; flex: none; gap: 2px; }
+.popup-credential-actions--fillable { width: 105px; flex-direction: column; gap: 4px; }
+.popup-credential-actions__secondary { display: flex; gap: 2px; }
+.popup-credential-actions--fillable .popup-fill-button { width: 100%; }
 .popup-credential-actions .button { min-width: 0; padding: 0 5px; }
 .popup-credential-actions .button--ghost { border-color: var(--border-subtle); }
 .popup-credential-list > div > p { padding: 4px 9px; color: var(--danger); font-size: 8px; }
+.popup-credential-list > div > .popup-fill-feedback { padding: 6px 9px; border-top: 1px solid var(--border-subtle); line-height: 1.4; }
+.popup-credential-list > div > .popup-fill-feedback--success { color: var(--success); }
 .popup-loading { display: grid; min-height: 120px; place-items: center; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-muted); font-size: 9px; }
 .popup-credentials-section .popup-empty-card { margin: 0; }
 .popup-credentials-section .popup-empty-card .empty-state { min-height: 140px; padding: 15px; }
