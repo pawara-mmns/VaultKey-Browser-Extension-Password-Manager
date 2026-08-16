@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { AuthGate } from "../auth/AuthGate";
 import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
 import { Icon } from "../components/Icon";
 import { Logo } from "../components/Logo";
 import type { NavPage } from "../types";
+import { QuickGenerator } from "./components/QuickGenerator";
 
 function openVault(page: NavPage = "dashboard") {
   const relativeUrl = `vault.html#${page}`;
@@ -19,6 +21,18 @@ interface UnlockedPopupProps {
 }
 
 function UnlockedPopup({ onLock }: UnlockedPopupProps) {
+  const [activeView, setActiveView] = useState<"vault" | "generator">("vault");
+
+  if (activeView === "generator") {
+    return (
+      <QuickGenerator
+        onBack={() => setActiveView("vault")}
+        onLock={onLock}
+        onOpenFullGenerator={() => openVault("generator")}
+      />
+    );
+  }
+
   return (
     <main className="popup-shell">
       <header className="popup-header">
@@ -49,7 +63,7 @@ function UnlockedPopup({ onLock }: UnlockedPopupProps) {
 
         <section className="quick-actions" aria-labelledby="quick-actions-heading">
           <h2 id="quick-actions-heading">Tools</h2>
-          <Button fullWidth variant="secondary" leadingIcon={<Icon name="generate" size={18} />} onClick={() => openVault("generator")}>
+          <Button fullWidth variant="secondary" leadingIcon={<Icon name="generate" size={18} />} onClick={() => setActiveView("generator")}>
             Generate password
           </Button>
         </section>
