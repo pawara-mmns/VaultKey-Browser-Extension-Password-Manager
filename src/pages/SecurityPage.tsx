@@ -13,8 +13,10 @@ const securityItems = [
   { label: "Credential secret storage", value: "Username, password and notes encrypted", note: "Local only", tone: "success" },
   { label: "Current website access", value: "Only when VaultKey is invoked", note: "Active tab", tone: "neutral" },
   { label: "Site matching", value: "Strict boundary-aware hostname matching", note: "Local only", tone: "success" },
-  { label: "Autofill", value: "Not enabled", note: "Phase 06", tone: "neutral" },
-  { label: "Automatic submit", value: "Disabled", note: "No page access", tone: "neutral" },
+  { label: "Quick Fill", value: "Explicit matching-account action", note: "On demand", tone: "success" },
+  { label: "Form access", value: "One main-frame injection after revalidation", note: "No static scripts", tone: "neutral" },
+  { label: "Persistent website access", value: "Disabled", note: "No host permissions", tone: "success" },
+  { label: "Automatic submit", value: "Disabled", note: "Always manual", tone: "success" },
   { label: "Auto lock", value: "Coming later", note: "Not active", tone: "neutral" },
 ];
 
@@ -30,9 +32,9 @@ export function SecurityPage() {
         <section className="security-hero">
           <div className="security-hero__icon"><Icon name="shield" size={30} /></div>
           <div>
-            <span className="eyebrow">Phase 05 status</span>
-            <h2>Phishing-safe local site matching active</h2>
-            <p>VaultKey identifies the active website only when invoked and suggests credentials using strict hostname boundaries.</p>
+            <span className="eyebrow">Phase 06 status</span>
+            <h2>Controlled, user-initiated Quick Fill active</h2>
+            <p>VaultKey revalidates the active website before decrypting one selected credential, fills a conservative login form, and never submits it.</p>
           </div>
         </section>
         <section className="content-card security-list">
@@ -45,7 +47,7 @@ export function SecurityPage() {
         </section>
         <section className="permission-card">
           <Icon name="check" size={20} />
-          <div><strong>Minimal browser permissions</strong><p>VaultKey uses active-tab access only when you invoke the extension to identify the current website. It cannot inspect page content or fill forms.</p></div>
+          <div><strong>Minimal browser permissions</strong><p>VaultKey uses storage, activeTab, and scripting. Page access occurs only after you click Fill Login for a matching account; no host permissions or static content scripts are used.</p></div>
         </section>
       </div>
     </div>
