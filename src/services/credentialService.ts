@@ -6,6 +6,7 @@ import {
   CredentialNotFoundError,
   type CredentialInput,
   type CredentialMetadata,
+  type CredentialSiteMetadata,
   type CredentialSummary,
   type DecryptedCredential,
   type StoredCredential,
@@ -86,6 +87,14 @@ export async function getCredential(id: string): Promise<DecryptedCredential> {
   if (!record) throw new CredentialNotFoundError();
   const secret = await decryptCredentialSecret(record.encrypted, record.id, vaultKey);
   return { id: record.id, ...record.metadata, ...secret };
+}
+
+export async function getCredentialSiteMetadata(id: string): Promise<CredentialSiteMetadata> {
+  const { records } = await loadCredentialRecords();
+  const record = records.find((item) => item.id === id);
+  if (!record) throw new CredentialNotFoundError();
+  const hostname = normalizeHostname(record.metadata.hostname ?? "") ?? normalizeHostname(record.metadata.website) ?? "";
+  return { id: record.id, ...record.metadata, hostname };
 }
 
 export async function updateCredential(id: string, rawInput: CredentialInput): Promise<void> {
