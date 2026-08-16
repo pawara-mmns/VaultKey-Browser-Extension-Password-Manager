@@ -5,6 +5,9 @@ const securityItems = [
   { label: "Vault status", value: "Unlocked", note: "Active session", tone: "success" },
   { label: "Master protection", value: "PBKDF2-HMAC-SHA-256", note: "600,000 iterations", tone: "neutral" },
   { label: "Vault key protection", value: "AES-GCM", note: "Authenticated", tone: "neutral" },
+  { label: "Password generator", value: "Cryptographically secure", note: "Active", tone: "success" },
+  { label: "Random source", value: "Web Crypto", note: "Local only", tone: "neutral" },
+  { label: "Generated password storage", value: "Not persisted", note: "Runtime memory only", tone: "neutral" },
   { label: "Storage", value: "Local only", note: "Browser sync disabled", tone: "neutral" },
   { label: "Credential encryption", value: "Coming in Phase 04", note: "Not active", tone: "neutral" },
   { label: "Auto lock", value: "Coming later", note: "Not active", tone: "neutral" },
@@ -22,7 +25,7 @@ export function SecurityPage() {
         <section className="security-hero">
           <div className="security-hero__icon"><Icon name="shield" size={30} /></div>
           <div>
-            <span className="eyebrow">Phase 02 status</span>
+            <span className="eyebrow">Phase 03 status</span>
             <h2>Local vault protection active</h2>
             <p>Your random vault key is protected by your master password. Credential storage is not enabled yet.</p>
           </div>
@@ -37,7 +40,7 @@ export function SecurityPage() {
         </section>
         <section className="permission-card">
           <Icon name="check" size={20} />
-          <div><strong>Minimal browser permissions</strong><p>Only local extension storage access is requested. No sites or browsing data are accessible.</p></div>
+          <div><strong>Minimal browser permissions</strong><p>Only local extension storage is requested. Copy uses a direct user action; no sites or browsing data are accessible.</p></div>
         </section>
       </div>
     </div>

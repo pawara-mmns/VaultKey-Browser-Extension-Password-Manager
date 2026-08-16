@@ -3,6 +3,7 @@ import { PageHeader } from "../components/PageHeader";
 
 const sections = [
   { icon: "sparkle" as const, title: "Appearance", setting: "Theme", value: "VaultKey Dark", state: "Active" },
+  { icon: "generate" as const, title: "Password generator", setting: "Secure local generation", value: "Web Crypto", state: "Active" },
   { icon: "lock" as const, title: "Security", setting: "Auto lock", value: "Coming later", state: "Planned" },
   { icon: "copy" as const, title: "Clipboard", setting: "Auto clear", value: "Coming later", state: "Planned" },
   { icon: "vault" as const, title: "Data", setting: "Encrypted export", value: "Coming later", state: "Planned" },
@@ -14,7 +15,7 @@ export function SettingsPage() {
       <PageHeader
         eyebrow="Preferences"
         title="Settings"
-        description="Shape how VaultKey looks and behaves. Persistence is not enabled yet."
+        description="Review active local features and preferences planned for later phases."
       />
       <section className="settings-stack">
         {sections.map((section) => (
@@ -25,7 +26,7 @@ export function SettingsPage() {
           </article>
         ))}
       </section>
-      <div className="about-row"><span>VaultKey Browser</span><span>Phase 02 · v0.2.0</span></div>
+      <div className="about-row"><span>VaultKey Browser</span><span>Phase 03 · v0.3.0</span></div>
     </div>
   );
 }
