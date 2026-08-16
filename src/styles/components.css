@@ -643,3 +643,182 @@ input:has(+ .field__trailing) {
 @keyframes auth-spin {
   to { transform: rotate(360deg); }
 }
+
+.password-display__control {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px 9px 16px;
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-md);
+  background: var(--primary-soft);
+}
+
+.password-display__input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 16px;
+  letter-spacing: 0.8px;
+}
+
+.password-display__input:focus-visible {
+  border-radius: 5px;
+  box-shadow: var(--focus-ring);
+}
+
+.password-display__copy {
+  display: inline-flex;
+  min-width: 78px;
+  height: 38px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 11px;
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: var(--text-on-primary);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 650;
+  transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.password-display__copy:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.password-display__copy:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.password-display__feedback {
+  min-height: 24px;
+  padding: 7px 2px 0;
+  color: var(--text-muted);
+  font-size: 9px;
+}
+
+.password-display__feedback--copied {
+  color: var(--success);
+}
+
+.password-display__feedback--error {
+  color: var(--danger);
+}
+
+.generated-strength {
+  padding: 18px 0 3px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.generated-strength__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.generated-strength__heading strong {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.generated-strength__track {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+  margin: 10px 0 8px;
+}
+
+.generated-strength__track span {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--border);
+}
+
+.generated-strength__track .is-active {
+  background: var(--success);
+}
+
+.generated-strength p {
+  color: var(--text-muted);
+  font-size: 9px;
+}
+
+.generated-strength--very-weak .generated-strength__heading strong,
+.generated-strength--weak .generated-strength__heading strong {
+  color: var(--danger);
+}
+
+.generated-strength--very-weak .generated-strength__track .is-active,
+.generated-strength--weak .generated-strength__track .is-active {
+  background: var(--danger);
+}
+
+.generated-strength--fair .generated-strength__heading strong,
+.generated-strength--fair .generated-strength__track .is-active {
+  color: var(--warning);
+}
+
+.generated-strength--fair .generated-strength__track .is-active {
+  background: var(--warning);
+}
+
+.generated-strength--very-strong .generated-strength__heading strong {
+  color: var(--primary-hover);
+}
+
+.generated-strength--very-strong .generated-strength__track .is-active {
+  background: var(--primary-hover);
+}
+
+.password-display--compact .password-display__control {
+  min-height: 54px;
+  padding: 7px 8px 7px 12px;
+}
+
+.password-display--compact .password-display__input {
+  font-size: 12px;
+  letter-spacing: 0.35px;
+}
+
+.password-display--compact .password-display__copy {
+  min-width: 65px;
+  height: 34px;
+  padding: 0 8px;
+  font-size: 10px;
+}
+
+.password-display--compact .password-display__feedback {
+  min-height: 21px;
+  padding-top: 5px;
+  font-size: 8px;
+}
+
+.generated-strength--compact {
+  padding-top: 10px;
+  border-bottom: 0;
+}
+
+.generated-strength--compact .generated-strength__heading,
+.generated-strength--compact p {
+  font-size: 8px;
+}
+
+.generated-strength--compact .generated-strength__track {
+  margin: 6px 0;
+}
+
+.generated-strength--compact .generated-strength__track span {
+  height: 3px;
+}

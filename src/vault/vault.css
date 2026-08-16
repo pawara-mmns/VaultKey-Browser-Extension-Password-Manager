@@ -317,7 +317,7 @@ body,
 }
 
 .generator-card {
-  width: min(100%, 650px);
+  width: min(100%, 700px);
   padding: 26px;
 }
 
@@ -336,33 +336,13 @@ body,
   font-weight: 650;
 }
 
-.generated-password {
-  display: flex;
-  height: 63px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 14px 0 18px;
-  border: 1px solid var(--primary-border);
-  border-radius: var(--radius-md);
-  background: var(--primary-soft);
-}
-
-.generated-password > span {
-  overflow: hidden;
-  color: var(--text-primary);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 20px;
-  letter-spacing: 3px;
-  white-space: nowrap;
-}
-
 .length-control {
   padding: 26px 0 22px;
   border-bottom: 1px solid var(--border-subtle);
 }
 
 .length-control label,
-.option-row span:first-child {
+.option-row > span:first-child {
   color: var(--text-secondary);
   font-size: 12px;
   font-weight: 550;
@@ -378,7 +358,14 @@ body,
   margin: 17px 0 8px;
   appearance: none;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--primary) 38%, var(--border) 38%);
+  cursor: pointer;
+  background: linear-gradient(
+    90deg,
+    var(--primary) 0,
+    var(--primary) var(--range-progress),
+    var(--border) var(--range-progress),
+    var(--border) 100%
+  );
 }
 
 .length-control input::-webkit-slider-thumb {
@@ -400,10 +387,25 @@ body,
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 9px;
-  padding: 21px 0;
+  padding: 12px 0 9px;
+}
+
+.generator-options {
+  min-width: 0;
+  margin: 0 0 21px;
+  padding: 20px 0 0;
+  border: 0;
+}
+
+.generator-options legend {
+  padding: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 550;
 }
 
 .option-row {
+  position: relative;
   display: flex;
   min-height: 48px;
   align-items: center;
@@ -412,6 +414,51 @@ body,
   border: 1px solid var(--border-subtle);
   border-radius: 10px;
   background: var(--white-02);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast), opacity var(--transition-fast);
+}
+
+.option-row:hover {
+  border-color: var(--border-strong);
+  background: var(--white-04);
+}
+
+.option-row > span:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.option-row strong {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.option-row small {
+  color: var(--text-muted);
+  font-size: 9px;
+}
+
+.option-row--wide {
+  width: 100%;
+}
+
+.option-row--required {
+  cursor: default;
+}
+
+.toggle-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toggle-input:focus-visible + .toggle {
+  box-shadow: var(--focus-ring);
 }
 
 .toggle {
@@ -423,6 +470,7 @@ body,
   padding: 2px;
   border-radius: 999px;
   background: var(--border-strong);
+  transition: justify-content var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .toggle span {
