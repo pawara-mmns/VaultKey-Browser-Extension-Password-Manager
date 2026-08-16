@@ -9,7 +9,8 @@ const securityItems = [
   { label: "Random source", value: "Web Crypto", note: "Local only", tone: "neutral" },
   { label: "Generated password storage", value: "Not persisted", note: "Runtime memory only", tone: "neutral" },
   { label: "Storage", value: "Local only", note: "Browser sync disabled", tone: "neutral" },
-  { label: "Credential encryption", value: "Coming in Phase 04", note: "Not active", tone: "neutral" },
+  { label: "Credential encryption", value: "AES-GCM with per-record AAD", note: "Active", tone: "success" },
+  { label: "Credential secret storage", value: "Username, password and notes encrypted", note: "Local only", tone: "success" },
   { label: "Auto lock", value: "Coming later", note: "Not active", tone: "neutral" },
 ];
 
@@ -25,9 +26,9 @@ export function SecurityPage() {
         <section className="security-hero">
           <div className="security-hero__icon"><Icon name="shield" size={30} /></div>
           <div>
-            <span className="eyebrow">Phase 03 status</span>
-            <h2>Local vault protection active</h2>
-            <p>Your random vault key is protected by your master password. Credential storage is not enabled yet.</p>
+            <span className="eyebrow">Phase 04 status</span>
+            <h2>Encrypted credential vault active</h2>
+            <p>Your random Vault Key protects every credential with AES-GCM and a fresh per-encryption IV.</p>
           </div>
         </section>
         <section className="content-card security-list">
