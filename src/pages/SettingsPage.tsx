@@ -6,6 +6,7 @@ const sections = [
   { icon: "generate" as const, title: "Password generator", setting: "Secure local generation", value: "Web Crypto", state: "Active" },
   { icon: "vault" as const, title: "Credential vault", setting: "AES-GCM encrypted local records", value: "Local only", state: "Active" },
   { icon: "globe" as const, title: "Current website", setting: "Strict active-tab hostname matching", value: "On invocation", state: "Active" },
+  { icon: "key" as const, title: "Quick Fill", setting: "Explicit account-specific login fill", value: "Manual submit", state: "Active" },
   { icon: "lock" as const, title: "Security", setting: "Auto lock", value: "Coming later", state: "Planned" },
   { icon: "copy" as const, title: "Clipboard", setting: "Auto clear", value: "Coming later", state: "Planned" },
   { icon: "vault" as const, title: "Data", setting: "Encrypted export", value: "Coming later", state: "Planned" },
@@ -28,7 +29,7 @@ export function SettingsPage() {
           </article>
         ))}
       </section>
-      <div className="about-row"><span>VaultKey Browser</span><span>Phase 05 · v0.5.0</span></div>
+      <div className="about-row"><span>VaultKey Browser</span><span>Phase 06 · v0.6.0</span></div>
     </div>
   );
 }
