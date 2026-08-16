@@ -2,6 +2,7 @@ import { SESSION_FORMAT_VERSION, VAULT_KEY_BYTES } from "./constants";
 import { base64ToBytes, bytesToBase64, isValidBase64 } from "./encoding";
 import { STORAGE_KEYS } from "../storage/storageKeys";
 import type { VaultSession } from "../types/vault";
+import { VaultLockedError } from "../types/credential";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -48,6 +49,12 @@ export async function getSession(): Promise<VaultSession | null> {
 
 export async function isUnlocked(): Promise<boolean> {
   return (await getSession()) !== null;
+}
+
+export async function getActiveVaultKey(): Promise<Uint8Array> {
+  const session = await getSession();
+  if (!session) throw new VaultLockedError();
+  return base64ToBytes(session.vaultKey);
 }
 
 export async function clearSession(): Promise<void> {
