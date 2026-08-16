@@ -10,17 +10,12 @@ import {
   type DecryptedCredential,
   type StoredCredential,
 } from "../types/credential";
+import { normalizeHostname, normalizeWebsiteInput } from "../utils/domain";
 
 export function normalizeWebsite(value: string): { website: string; hostname: string } {
   const trimmed = value.trim();
   if (!trimmed) return { website: "", hostname: "" };
-  try {
-    const parsed = new URL(trimmed.includes("://") ? trimmed : `https://${trimmed}`);
-    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return { website: trimmed, hostname: "" };
-    return { website: parsed.href, hostname: parsed.hostname.toLowerCase() };
-  } catch {
-    return { website: trimmed, hostname: "" };
-  }
+  return normalizeWebsiteInput(trimmed) ?? { website: trimmed, hostname: "" };
 }
 
 function normalizeInput(input: CredentialInput): CredentialInput {
@@ -36,6 +31,7 @@ function normalizeInput(input: CredentialInput): CredentialInput {
 function validateInput(input: CredentialInput): void {
   if (!input.serviceName) throw new RangeError("Service name is required.");
   if (!input.password) throw new RangeError("Password is required.");
+  if (input.website && !normalizeHostname(input.website)) throw new RangeError("Enter a valid HTTP or HTTPS website.");
 }
 
 function createId(): string {
@@ -67,7 +63,7 @@ export async function createCredential(rawInput: CredentialInput): Promise<Crede
   const encrypted = await encryptCredentialSecret({ username: input.username, password: input.password, notes: input.notes }, id, vaultKey);
   const record: StoredCredential = { id, version: CREDENTIAL_FORMAT_VERSION, metadata, encrypted };
   await mutateCredentialRecords((records) => ({ records: [...records, record], result: undefined }));
-  return { id, ...metadata, username: input.username, unreadable: false };
+  return { id, ...metadata, hostname: site.hostname, username: input.username, unreadable: false };
 }
 
 export async function listCredentialSummaries(): Promise<{ summaries: CredentialSummary[]; invalidRecordCount: number }> {
@@ -75,9 +71,9 @@ export async function listCredentialSummaries(): Promise<{ summaries: Credential
   const summaries = await Promise.all(records.map(async (record): Promise<CredentialSummary> => {
     try {
       const username = await decryptCredentialUsername(record.encrypted, record.id, vaultKey);
-      return { id: record.id, ...record.metadata, username, unreadable: false };
+      return { id: record.id, ...record.metadata, hostname: normalizeHostname(record.metadata.hostname ?? "") ?? normalizeHostname(record.metadata.website) ?? "", username, unreadable: false };
     } catch {
-      return { id: record.id, ...record.metadata, username: "Unable to read", unreadable: true };
+      return { id: record.id, ...record.metadata, hostname: normalizeHostname(record.metadata.hostname ?? "") ?? normalizeHostname(record.metadata.website) ?? "", username: "Unable to read", unreadable: true };
     }
   }));
   summaries.sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
