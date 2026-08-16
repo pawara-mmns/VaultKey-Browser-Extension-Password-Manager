@@ -6,7 +6,7 @@ import { CredentialForm } from "./CredentialForm";
 
 export type CredentialWorkspaceState =
   | { kind: "closed" }
-  | { kind: "add"; initialPassword?: string }
+  | { kind: "add"; initialPassword?: string; initialWebsite?: string }
   | { kind: "details"; credentialId: string }
   | { kind: "edit"; credential: DecryptedCredential };
 
@@ -29,7 +29,7 @@ export function CredentialWorkspace({ state, onChange }: CredentialWorkspaceProp
       <button className="credential-modal__backdrop" type="button" aria-label="Close credential panel" onClick={close} />
       <section className="credential-modal__panel">
         <button className="icon-button credential-modal__close" type="button" aria-label="Close" onClick={close}><Icon name="add" size={20} /></button>
-        {state.kind === "add" && <CredentialForm initialPassword={state.initialPassword} onCancel={close} onSaved={() => void saved()} />}
+        {state.kind === "add" && <CredentialForm initialPassword={state.initialPassword} initialWebsite={state.initialWebsite} onCancel={close} onSaved={() => void saved()} />}
         {state.kind === "edit" && <CredentialForm credential={state.credential} onCancel={() => onChange({ kind: "details", credentialId: state.credential.id })} onSaved={() => void saved()} />}
         {state.kind === "details" && <CredentialDetails credentialId={state.credentialId} onClose={close} onEdit={(credential) => onChange({ kind: "edit", credential })} onDeleted={() => void saved()} />}
       </section>

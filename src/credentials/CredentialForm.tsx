@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../components/Button";
 import { Icon } from "../components/Icon";
 import { Input } from "../components/Input";
@@ -6,31 +6,37 @@ import { getGeneratorSettings } from "../generator/generatorSettings";
 import { generatePassword } from "../security/passwordGenerator";
 import { createCredential, updateCredential } from "../services/credentialService";
 import type { CredentialInput, DecryptedCredential } from "../types/credential";
+import { normalizeHostname } from "../utils/domain";
 
 interface CredentialFormProps {
   credential?: DecryptedCredential;
   initialPassword?: string;
+  initialWebsite?: string;
   onCancel: () => void;
   onSaved: () => void;
 }
 
 const emptyInput: CredentialInput = { serviceName: "", username: "", password: "", website: "", notes: "" };
 
-export function CredentialForm({ credential, initialPassword = "", onCancel, onSaved }: CredentialFormProps) {
+export function CredentialForm({ credential, initialPassword = "", initialWebsite = "", onCancel, onSaved }: CredentialFormProps) {
   const [form, setForm] = useState<CredentialInput>(() => credential ? {
     serviceName: credential.serviceName,
     username: credential.username,
     password: credential.password,
     website: credential.website,
     notes: credential.notes,
-  } : { ...emptyInput, password: initialPassword });
+  } : { ...emptyInput, password: initialPassword, website: initialWebsite });
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<{ serviceName?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ serviceName?: string; password?: string; website?: string }>({});
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
+
+  useEffect(() => {
+    if (initialWebsite) setForm((current) => current.website ? current : { ...current, website: initialWebsite });
+  }, [initialWebsite]);
 
   const update = (key: keyof CredentialInput, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
-    if (key === "serviceName" || key === "password") setErrors((current) => ({ ...current, [key]: undefined }));
+    if (key === "serviceName" || key === "password" || key === "website") setErrors((current) => ({ ...current, [key]: undefined }));
   };
 
   const handleGenerate = async () => {
@@ -47,9 +53,10 @@ export function CredentialForm({ credential, initialPassword = "", onCancel, onS
     const nextErrors = {
       serviceName: form.serviceName.trim() ? undefined : "Service name is required.",
       password: form.password ? undefined : "Password is required.",
+      website: form.website.trim() && !normalizeHostname(form.website) ? "Enter a valid HTTP or HTTPS website." : undefined,
     };
     setErrors(nextErrors);
-    if (nextErrors.serviceName || nextErrors.password) return;
+    if (nextErrors.serviceName || nextErrors.password || nextErrors.website) return;
     setStatus("saving");
     try {
       if (credential) await updateCredential(credential.id, form);
@@ -85,7 +92,7 @@ export function CredentialForm({ credential, initialPassword = "", onCancel, onS
           </span>
         }
       />
-      <Input label="Website" value={form.website} onChange={(event) => update("website", event.target.value)} placeholder="github.com" />
+      <Input label="Website" value={form.website} onChange={(event) => update("website", event.target.value)} placeholder="github.com" aria-invalid={Boolean(errors.website)} hint={errors.website} />
       <label className="credential-textarea-field">
         <span>Notes</span>
         <textarea value={form.notes} onChange={(event) => update("notes", event.target.value)} rows={4} />
