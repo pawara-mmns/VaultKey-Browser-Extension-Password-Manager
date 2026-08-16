@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AuthGate } from "../auth/AuthGate";
 import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
@@ -7,8 +7,13 @@ import { Input } from "../components/Input";
 import { Logo } from "../components/Logo";
 import { CredentialProvider, useCredentials } from "../credentials/CredentialProvider";
 import { useDebouncedValue } from "../credentials/useDebouncedValue";
+import { savePendingCredentialPrefill } from "../services/credentialPrefillService";
+import { getCurrentSite } from "../services/currentTabService";
 import { searchCredentialSummaries } from "../services/credentialService";
+import { findMatchingCredentials } from "../services/siteMatchingService";
+import type { CurrentSite } from "../types/currentSite";
 import type { NavPage } from "../types";
+import { CurrentSiteCard } from "./components/CurrentSiteCard";
 import { PopupCredentialList } from "./components/PopupCredentialList";
 import { QuickGenerator } from "./components/QuickGenerator";
 
@@ -21,8 +26,25 @@ function openVault(page: NavPage | "vault-add" | `credential-${string}` = "dashb
 function UnlockedPopup({ onLock }: { onLock: () => Promise<void> }) {
   const [activeView, setActiveView] = useState<"vault" | "generator">("vault");
   const [query, setQuery] = useState("");
+  const [currentSite, setCurrentSite] = useState<CurrentSite | null>(null);
+  const [siteLoading, setSiteLoading] = useState(true);
   const { credentials, loading } = useCredentials();
-  const filtered = searchCredentialSummaries(credentials, useDebouncedValue(query)).slice(0, 5);
+  const debouncedQuery = useDebouncedValue(query);
+  const filtered = searchCredentialSummaries(credentials, debouncedQuery).slice(0, 5);
+  const matches = useMemo(() => currentSite?.supported ? findMatchingCredentials(currentSite.hostname, credentials) : [], [currentSite, credentials]);
+
+  useEffect(() => {
+    let mounted = true;
+    void getCurrentSite().then((site) => { if (mounted) setCurrentSite(site); }).finally(() => { if (mounted) setSiteLoading(false); });
+    return () => { mounted = false; };
+  }, []);
+
+  const addCurrentSite = async () => {
+    if (currentSite?.supported) {
+      try { await savePendingCredentialPrefill(currentSite.url); } catch { /* The form can still open without a prefill. */ }
+    }
+    openVault("vault-add");
+  };
 
   if (activeView === "generator") return <QuickGenerator onBack={() => setActiveView("vault")} onLock={onLock} onOpenFullGenerator={() => openVault("generator")} />;
 
@@ -30,12 +52,9 @@ function UnlockedPopup({ onLock }: { onLock: () => Promise<void> }) {
     <main className="popup-shell">
       <header className="popup-header"><Logo size="small" /><button className="lock-button" type="button" onClick={() => void onLock()}><Icon name="lock" size={16} /><span>Lock</span></button></header>
       <div className="popup-content popup-content--unlocked">
-        <section className="popup-vault-heading"><span className="eyebrow">Protected locally</span><h1>Your vault</h1><p>{credentials.length} encrypted {credentials.length === 1 ? "credential" : "credentials"}</p></section>
-        <section className="search-section"><Input aria-label="Search vault" type="search" placeholder="Search vault..." leadingIcon={<Icon name="search" size={17} />} value={query} onChange={(event) => setQuery(event.target.value)} /></section>
-        <section className="popup-credentials-section">
-          <div className="popup-section-heading"><h2>{query ? "Search results" : "Recent credentials"}</h2><span>Up to 5</span></div>
-          {loading ? <div className="popup-loading">Loading encrypted vault…</div> : credentials.length === 0 ? <div className="popup-empty-card"><EmptyState compact title="No credentials yet" description="Add your first encrypted credential." /></div> : filtered.length === 0 ? <div className="popup-empty-card"><EmptyState compact title="No credentials found" description="Try another search." /></div> : <PopupCredentialList credentials={filtered} onOpen={(id) => openVault(`credential-${id}`)} />}
-        </section>
+        <CurrentSiteCard currentSite={currentSite} loading={siteLoading} matches={matches} matchesLoading={loading} onAddLogin={() => void addCurrentSite()} onOpen={(id) => openVault(`credential-${id}`)} />
+        <section className="search-section"><Input aria-label="Search vault" type="search" placeholder="Search credentials..." leadingIcon={<Icon name="search" size={17} />} value={query} onChange={(event) => setQuery(event.target.value)} /></section>
+        {query && <section className="popup-credentials-section"><div className="popup-section-heading"><h2>Search results</h2><span>Up to 5</span></div>{loading ? <div className="popup-loading">Loading encrypted vault…</div> : filtered.length === 0 ? <div className="popup-empty-card"><EmptyState compact title="No credentials found" description="Try another search." /></div> : <PopupCredentialList credentials={filtered} onOpen={(id) => openVault(`credential-${id}`)} />}</section>}
         <section className="quick-actions"><h2>Quick actions</h2><div className="quick-actions__grid"><Button variant="secondary" leadingIcon={<Icon name="add" size={17} />} onClick={() => openVault("vault-add")}>Add</Button><Button variant="secondary" leadingIcon={<Icon name="generate" size={17} />} onClick={() => setActiveView("generator")}>Generate</Button></div></section>
       </div>
       <footer className="popup-footer"><Button fullWidth onClick={() => openVault()} trailingIcon={<Icon name="arrow" size={18} />}>Open full vault</Button></footer>

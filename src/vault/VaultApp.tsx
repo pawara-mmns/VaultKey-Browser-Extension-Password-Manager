@@ -12,6 +12,7 @@ import { SettingsPage } from "../pages/SettingsPage";
 import { VaultPage } from "../pages/VaultPage";
 import type { NavPage } from "../types";
 import { NAVIGATION_ITEMS } from "../utils/helpers";
+import { consumePendingCredentialPrefill } from "../services/credentialPrefillService";
 
 const pageIds = new Set<NavPage>(NAVIGATION_ITEMS.map((item) => item.id));
 
@@ -33,9 +34,19 @@ function UnlockedVaultApp({ onLock }: { onLock: () => Promise<void> }) {
   const [workspace, setWorkspace] = useState<CredentialWorkspaceState>(getInitialWorkspace);
 
   useEffect(() => {
+    if (window.location.hash === "#vault-add") {
+      void consumePendingCredentialPrefill().then((initialWebsite) => {
+        if (initialWebsite && window.location.hash === "#vault-add") setWorkspace({ kind: "add", initialWebsite });
+      }).catch(() => undefined);
+    }
     const handleHashChange = () => {
       setActivePage(getInitialPage());
-      if (window.location.hash === "#vault-add") setWorkspace({ kind: "add" });
+      if (window.location.hash === "#vault-add") {
+        setWorkspace({ kind: "add" });
+        void consumePendingCredentialPrefill().then((initialWebsite) => {
+          if (initialWebsite && window.location.hash === "#vault-add") setWorkspace({ kind: "add", initialWebsite });
+        }).catch(() => undefined);
+      }
       else if (window.location.hash.startsWith("#credential-")) setWorkspace({ kind: "details", credentialId: window.location.hash.slice("#credential-".length) });
     };
     window.addEventListener("hashchange", handleHashChange);
@@ -49,6 +60,12 @@ function UnlockedVaultApp({ onLock }: { onLock: () => Promise<void> }) {
   };
   const addCredential = (initialPassword?: string) => setWorkspace({ kind: "add", initialPassword });
   const openCredential = (credentialId: string) => setWorkspace({ kind: "details", credentialId });
+  const changeWorkspace = (nextWorkspace: CredentialWorkspaceState) => {
+    if (nextWorkspace.kind === "closed" && (window.location.hash === "#vault-add" || window.location.hash.startsWith("#credential-"))) {
+      window.history.replaceState(null, "", "#vault");
+    }
+    setWorkspace(nextWorkspace);
+  };
 
   return (
     <CredentialProvider>
@@ -65,7 +82,7 @@ function UnlockedVaultApp({ onLock }: { onLock: () => Promise<void> }) {
             {activePage === "settings" && <SettingsPage />}
           </div>
         </div>
-        <CredentialWorkspace state={workspace} onChange={setWorkspace} />
+        <CredentialWorkspace state={workspace} onChange={changeWorkspace} />
       </div>
     </CredentialProvider>
   );
