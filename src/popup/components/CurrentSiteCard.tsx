@@ -11,9 +11,12 @@ interface CurrentSiteCardProps {
   matchesLoading: boolean;
   onAddLogin: () => void;
   onOpen: (id: string) => void;
+  onFill: (id: string) => void;
+  fillingId: string | null;
+  fillFeedback: { id: string; message: string; success: boolean } | null;
 }
 
-export function CurrentSiteCard({ currentSite, loading, matches, matchesLoading, onAddLogin, onOpen }: CurrentSiteCardProps) {
+export function CurrentSiteCard({ currentSite, loading, matches, matchesLoading, onAddLogin, onOpen, onFill, fillingId, fillFeedback }: CurrentSiteCardProps) {
   return (
     <section className="current-site-section" aria-labelledby="current-site-heading">
       <div className="popup-section-heading"><h2 id="current-site-heading">Current website</h2><span>Active tab only</span></div>
@@ -26,7 +29,7 @@ export function CurrentSiteCard({ currentSite, loading, matches, matchesLoading,
         <div className="site-matches">
           <div className="popup-section-heading"><h2>Matching accounts</h2><span>{matches.length} {matches.length === 1 ? "account" : "accounts"}</span></div>
           {matchesLoading ? <div className="site-matches__loading">Checking encrypted vault…</div> : matches.length > 0 ? (
-            <PopupCredentialList credentials={matches.map((match) => match.credential)} onOpen={onOpen} showUsernameCopy />
+            <PopupCredentialList credentials={matches.map((match) => match.credential)} onOpen={onOpen} onFill={onFill} fillingId={fillingId} fillFeedback={fillFeedback} showUsernameCopy />
           ) : (
             <div className="site-no-match"><p>No saved login for this site.</p><Button variant="secondary" size="small" leadingIcon={<Icon name="add" size={15} />} onClick={onAddLogin}>Add login</Button></div>
           )}
