@@ -20,7 +20,7 @@ const characterSetOptions: Array<{ id: CharacterSetOption; label: string; exampl
   { id: "symbols", label: "Symbols", example: "!@#$" },
 ];
 
-export function GeneratorPage() {
+export function GeneratorPage({ onSaveToVault }: { onSaveToVault: (password: string) => void }) {
   const { settings, password, metrics, updateSettings, regenerate } = usePasswordGenerator();
   const [draftLength, setDraftLength] = useState(settings.length);
   const enabledSetCount = characterSetOptions.filter(({ id }) => settings[id]).length;
@@ -104,9 +104,10 @@ export function GeneratorPage() {
           </label>
         </fieldset>
 
-        <Button fullWidth size="large" leadingIcon={<Icon name="generate" size={18} />} onClick={regenerate}>
-          Generate new password
-        </Button>
+        <div className="generator-actions">
+          <Button fullWidth size="large" variant="secondary" leadingIcon={<Icon name="generate" size={18} />} onClick={regenerate}>Generate new password</Button>
+          <Button fullWidth size="large" leadingIcon={<Icon name="vault" size={18} />} onClick={() => onSaveToVault(password)}>Save to vault</Button>
+        </div>
       </section>
     </div>
   );
