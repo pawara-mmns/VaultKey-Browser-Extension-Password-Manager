@@ -161,6 +161,17 @@ body,
 .popup-vault-heading { margin-bottom: 13px; }
 .popup-vault-heading h1 { margin: 4px 0 2px; font-size: 19px; letter-spacing: -.5px; }
 .popup-vault-heading p { color: var(--text-muted); font-size: 9px; }
+.current-site-section { margin-bottom: 14px; }
+.current-site-card { display: flex; min-height: 58px; align-items: center; gap: 11px; padding: 10px 11px; border: 1px solid var(--primary-border); border-radius: var(--radius-md); background: linear-gradient(120deg, var(--primary-soft), var(--white-02)); }
+.current-site-card--unavailable { border-color: var(--border-subtle); background: var(--white-02); }
+.current-site-card__icon { display: grid; width: 34px; height: 34px; flex: none; border-radius: 9px; background: var(--primary-soft); color: var(--primary-hover); place-items: center; }
+.current-site-card > div:last-child { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
+.current-site-card strong { overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.current-site-card span { color: var(--text-muted); font-size: 8px; }
+.site-matches { margin-top: 12px; }
+.site-no-match { display: flex; min-height: 55px; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 10px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--white-02); }
+.site-no-match p { color: var(--text-secondary); font-size: 9px; }
+.site-matches__loading { display: grid; min-height: 55px; place-items: center; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-muted); font-size: 9px; }
 .popup-credentials-section { margin-bottom: 15px; }
 .popup-credential-list { overflow: hidden; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--white-02); }
 .popup-credential-list .credential-row { min-height: 60px; padding: 7px 8px; }
@@ -168,6 +179,9 @@ body,
 .popup-credential-list .credential-row__copy strong { font-size: 11px; }
 .popup-credential-list .credential-row__copy span { font-size: 8px; }
 .popup-credential-list .button { min-height: 29px; padding: 0 8px; font-size: 9px; }
+.popup-credential-actions { display: flex; flex: none; gap: 2px; }
+.popup-credential-actions .button { min-width: 0; padding: 0 5px; }
+.popup-credential-actions .button--ghost { border-color: var(--border-subtle); }
 .popup-credential-list > div > p { padding: 4px 9px; color: var(--danger); font-size: 8px; }
 .popup-loading { display: grid; min-height: 120px; place-items: center; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-muted); font-size: 9px; }
 .popup-credentials-section .popup-empty-card { margin: 0; }
