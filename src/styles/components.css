@@ -365,6 +365,70 @@ input:has(+ .field__trailing) {
   fill: var(--warning-soft);
 }
 
+.credential-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.credential-row {
+  display: flex;
+  min-height: 82px;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: transparent;
+  transition: background var(--transition-fast);
+}
+
+.credential-row:last-child { border-bottom: 0; }
+.credential-row:hover { background: var(--white-02); }
+.credential-row--unreadable { border-left: 2px solid var(--danger); }
+
+.credential-row__main {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 13px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.credential-row__main:focus-visible { border-radius: 8px; box-shadow: var(--focus-ring); }
+
+.credential-row__avatar {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border: 1px solid var(--primary-border);
+  border-radius: 11px;
+  background: var(--primary-soft);
+  color: var(--primary-hover);
+  font-size: 16px;
+  font-weight: 750;
+  place-items: center;
+}
+
+.credential-row__copy { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
+.credential-row__copy strong,
+.credential-row__copy span,
+.credential-row__copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.credential-row__copy strong { font-size: 13px; font-weight: 650; }
+.credential-row__copy span { color: var(--text-secondary); font-size: 11px; }
+.credential-row__copy small { color: var(--text-muted); font-size: 9px; }
+.credential-row__favorite.is-favorite { color: var(--warning); }
+.credential-row__favorite.is-favorite svg { fill: var(--warning-soft); }
+
+.credential-row--compact { min-height: 66px; padding: 8px 14px; }
+.credential-row--compact .credential-row__avatar { width: 36px; height: 36px; font-size: 14px; }
+.credential-row--compact .credential-row__copy strong { font-size: 12px; }
+.credential-list--compact .credential-row:first-child { border-top: 0; }
+
 .empty-state {
   display: flex;
   min-height: 330px;

@@ -158,6 +158,24 @@ body,
   flex-direction: column;
 }
 
+.popup-vault-heading { margin-bottom: 13px; }
+.popup-vault-heading h1 { margin: 4px 0 2px; font-size: 19px; letter-spacing: -.5px; }
+.popup-vault-heading p { color: var(--text-muted); font-size: 9px; }
+.popup-credentials-section { margin-bottom: 15px; }
+.popup-credential-list { overflow: hidden; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--white-02); }
+.popup-credential-list .credential-row { min-height: 60px; padding: 7px 8px; }
+.popup-credential-list .credential-row__avatar { width: 33px; height: 33px; border-radius: 9px; font-size: 12px; }
+.popup-credential-list .credential-row__copy strong { font-size: 11px; }
+.popup-credential-list .credential-row__copy span { font-size: 8px; }
+.popup-credential-list .button { min-height: 29px; padding: 0 8px; font-size: 9px; }
+.popup-credential-list > div > p { padding: 4px 9px; color: var(--danger); font-size: 8px; }
+.popup-loading { display: grid; min-height: 120px; place-items: center; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-muted); font-size: 9px; }
+.popup-credentials-section .popup-empty-card { margin: 0; }
+.popup-credentials-section .popup-empty-card .empty-state { min-height: 140px; padding: 15px; }
+.popup-credentials-section .popup-empty-card .empty-state__icon { width: 36px; height: 36px; margin-bottom: 9px; }
+.popup-credentials-section .popup-empty-card h3 { font-size: 12px; }
+.popup-credentials-section .popup-empty-card p { font-size: 9px; }
+
 .unlocked-hero {
   display: flex;
   align-items: center;
