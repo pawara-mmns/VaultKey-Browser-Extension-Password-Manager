@@ -1,9 +1,9 @@
 {
   "name": "vaultkey-browser",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
-  "description": "Standalone local-first password manager browser extension foundation.",
+  "description": "Standalone local-first password manager browser extension.",
   "scripts": {
     "dev": "vite --open popup.html",
     "test": "vitest run",
