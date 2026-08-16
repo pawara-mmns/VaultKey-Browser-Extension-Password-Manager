@@ -1,16 +1,7 @@
-export type NavPage = "dashboard" | "vault" | "generator" | "security" | "settings";
+export type NavPage = "dashboard" | "vault" | "favorites" | "generator" | "security" | "settings";
 
 export interface CurrentSite {
   hostname: string;
-}
-
-export interface CredentialSummary {
-  id: string;
-  serviceName: string;
-  username: string;
-  website: string;
-  favorite: boolean;
-  accent: string;
 }
 
 export interface NavigationItem {
@@ -26,6 +17,8 @@ export type IconName =
   | "chevron"
   | "copy"
   | "dashboard"
+  | "delete"
+  | "edit"
   | "eye"
   | "eyeOff"
   | "filter"
