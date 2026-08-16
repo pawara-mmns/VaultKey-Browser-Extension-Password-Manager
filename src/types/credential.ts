@@ -4,7 +4,7 @@ export const CREDENTIAL_COLLECTION_VERSION = 1 as const;
 export interface CredentialMetadata {
   serviceName: string;
   website: string;
-  hostname: string;
+  hostname?: string;
   favorite: boolean;
   createdAt: string;
   updatedAt: string;
@@ -39,8 +39,9 @@ export interface StoredCredentialCollection {
   records: StoredCredential[];
 }
 
-export interface CredentialSummary extends CredentialMetadata {
+export interface CredentialSummary extends Omit<CredentialMetadata, "hostname"> {
   id: string;
+  hostname: string;
   username: string;
   unreadable: boolean;
 }
