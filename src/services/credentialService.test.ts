@@ -104,4 +104,18 @@ describe("credential service", () => {
     expect(searchCredentialSummaries(summaries, "linkedin.com")).toHaveLength(1);
     expect(searchCredentialSummaries(summaries, "work-profile")).toHaveLength(1);
   });
+
+  it("derives hostname for a valid legacy record that does not contain hostname metadata", async () => {
+    await createCredential(github);
+    const collection = localData[STORAGE_KEYS.credentials] as { records: Array<{ metadata: { hostname?: string } }> };
+    delete collection.records[0].metadata.hostname;
+    const { summaries, invalidRecordCount } = await listCredentialSummaries();
+    expect(invalidRecordCount).toBe(0);
+    expect(summaries[0].hostname).toBe("github.com");
+  });
+
+  it("rejects malformed website input before writing a credential", async () => {
+    await expect(createCredential({ ...github, website: "not a valid website" })).rejects.toThrow("valid HTTP or HTTPS website");
+    expect(localData[STORAGE_KEYS.credentials]).toBeUndefined();
+  });
 });
