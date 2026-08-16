@@ -11,6 +11,10 @@ const securityItems = [
   { label: "Storage", value: "Local only", note: "Browser sync disabled", tone: "neutral" },
   { label: "Credential encryption", value: "AES-GCM with per-record AAD", note: "Active", tone: "success" },
   { label: "Credential secret storage", value: "Username, password and notes encrypted", note: "Local only", tone: "success" },
+  { label: "Current website access", value: "Only when VaultKey is invoked", note: "Active tab", tone: "neutral" },
+  { label: "Site matching", value: "Strict boundary-aware hostname matching", note: "Local only", tone: "success" },
+  { label: "Autofill", value: "Not enabled", note: "Phase 06", tone: "neutral" },
+  { label: "Automatic submit", value: "Disabled", note: "No page access", tone: "neutral" },
   { label: "Auto lock", value: "Coming later", note: "Not active", tone: "neutral" },
 ];
 
@@ -26,9 +30,9 @@ export function SecurityPage() {
         <section className="security-hero">
           <div className="security-hero__icon"><Icon name="shield" size={30} /></div>
           <div>
-            <span className="eyebrow">Phase 04 status</span>
-            <h2>Encrypted credential vault active</h2>
-            <p>Your random Vault Key protects every credential with AES-GCM and a fresh per-encryption IV.</p>
+            <span className="eyebrow">Phase 05 status</span>
+            <h2>Phishing-safe local site matching active</h2>
+            <p>VaultKey identifies the active website only when invoked and suggests credentials using strict hostname boundaries.</p>
           </div>
         </section>
         <section className="content-card security-list">
@@ -41,7 +45,7 @@ export function SecurityPage() {
         </section>
         <section className="permission-card">
           <Icon name="check" size={20} />
-          <div><strong>Minimal browser permissions</strong><p>Only local extension storage is requested. Copy uses a direct user action; no sites or browsing data are accessible.</p></div>
+          <div><strong>Minimal browser permissions</strong><p>VaultKey uses active-tab access only when you invoke the extension to identify the current website. It cannot inspect page content or fill forms.</p></div>
         </section>
       </div>
     </div>
