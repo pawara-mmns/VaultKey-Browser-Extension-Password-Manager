@@ -2,7 +2,27 @@
 
 VaultKey Browser is a standalone, local-first password manager extension built with React, TypeScript, Vite, Manifest V3, and native Web Crypto. It has no backend, cloud account, analytics, telemetry, or runtime network dependency.
 
-## Phase 05
+## Phase 06
+
+Phase 06 adds controlled, user-initiated Quick Fill:
+
+- Shows a separate **Fill Login** action for each account matched to the active website
+- Re-queries and strictly revalidates the active tab and saved hostname before decrypting the selected credential
+- Decrypts only the credential selected by the user
+- Injects one self-contained function into the active tab's main frame only after the explicit click
+- Checks the page hostname again inside the injected function before touching the form
+- Selects only visible, enabled, editable login inputs using conservative signals
+- Refuses sign-up, password-change, ambiguous multi-password, unsupported, and domain-changed pages
+- Supports password-only partial success when no safe username field can be identified
+- Dispatches standard `input` and `change` events for framework compatibility
+- Never clicks buttons, submits forms, or presses Enter; the user reviews and signs in manually
+- Returns only a structured success/failure result to the extension
+
+Quick Fill has no background scanning, static content script, host permission, fill history, secret logging, or network request. Plaintext credentials exist only for the selected operation and are not written to extension or page storage.
+
+**VaultKey never automatically submits login forms.**
+
+## Phase 05 site awareness
 
 Phase 05 adds current-website awareness without accessing page content:
 
@@ -17,7 +37,7 @@ Phase 05 adds current-website awareness without accessing page content:
 - Prefills Add Login with the current URL through a one-time session handoff that is immediately removed
 - Derives missing hostname metadata from older credentials' saved website at runtime
 
-Current URLs and hostnames are not saved as browsing history, logged, or transmitted. VaultKey does not yet inspect forms, inject credentials, fill webpages, or submit logins. Those capabilities belong to a later phase.
+Current URLs and hostnames are not saved as browsing history, logged, or transmitted.
 
 ## Encrypted credential vault
 
@@ -92,7 +112,7 @@ Session storage may contain:
 - `vaultkey.generatorSettings` non-secret generator preferences
 - A short-lived `vaultkey.pendingCredentialPrefill` current-URL handoff, removed immediately when the Add Credential form opens
 
-Local and session storage access is restricted to trusted extension contexts where supported. The manifest requests only `storage` and `activeTab`. `activeTab` is used when VaultKey is invoked to read the active HTTP/HTTPS tab URL. There are no content scripts, `tabs` permission, scripting permission, host permissions, remote images, favicon APIs, autofill, or `chrome.storage.sync` usage.
+Local and session storage access is restricted to trusted extension contexts where supported. The manifest requests only `storage`, `activeTab`, and `scripting`. `activeTab` is used when VaultKey is invoked to read the active HTTP/HTTPS tab URL, and `scripting` is used only after a **Fill Login** click to run the one-shot main-frame fill function. There are no static content scripts, `tabs` permission, host permissions, `<all_urls>`, remote images, favicon APIs, background autofill, automatic submit, or `chrome.storage.sync` usage.
 
 ## Commands
 
@@ -107,4 +127,4 @@ On Windows, use `npm.cmd` if PowerShell blocks `npm.ps1`. The production extensi
 
 ## Current limitations
 
-Phase 05 intentionally does not include content scripts, DOM/form detection, credential injection, autofill, automatic submit, clipboard auto-clear, inactivity auto-lock, master-password changes, recovery, sync, backup, or encrypted import/export. These belong to later phases.
+Phase 06 intentionally does not include static content scripts, background page scanning, automatic or page-load fill, automatic submit, iframe fill, clipboard auto-clear, inactivity auto-lock, master-password changes, recovery, sync, backup, or encrypted import/export. These belong to later phases.
