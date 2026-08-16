@@ -23,7 +23,7 @@ export function isValidStoredCredential(value: unknown): value is StoredCredenti
   const encryptedSecret = value.encrypted.secret;
   if (
     typeof metadata.serviceName !== "string" || !metadata.serviceName.trim() ||
-    typeof metadata.website !== "string" || typeof metadata.hostname !== "string" ||
+    typeof metadata.website !== "string" || (metadata.hostname !== undefined && typeof metadata.hostname !== "string") ||
     typeof metadata.favorite !== "boolean" || !isTimestamp(metadata.createdAt) || !isTimestamp(metadata.updatedAt) ||
     encryptedUsername.algorithm !== "AES-GCM" || !isValidBase64(encryptedUsername.iv) || !isValidBase64(encryptedUsername.ciphertext) ||
     encryptedSecret.algorithm !== "AES-GCM" || !isValidBase64(encryptedSecret.iv) || !isValidBase64(encryptedSecret.ciphertext)
