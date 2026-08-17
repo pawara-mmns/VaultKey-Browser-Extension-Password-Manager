@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
+import { writePasswordToClipboard } from "../services/clipboardService";
 
 interface PasswordDisplayProps {
   password: string;
@@ -23,7 +24,7 @@ export function PasswordDisplay({ password, compact = false }: PasswordDisplayPr
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(password);
+      await writePasswordToClipboard(password);
       setCopyStatus("copied");
       if (resetTimer.current !== null) window.clearTimeout(resetTimer.current);
       resetTimer.current = window.setTimeout(() => setCopyStatus("idle"), 1800);

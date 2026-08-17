@@ -4,6 +4,7 @@ import { Icon } from "../../components/Icon";
 import { CredentialItem } from "../../credentials/CredentialItem";
 import { getCredential } from "../../services/credentialService";
 import type { CredentialSummary } from "../../types/credential";
+import { writePasswordToClipboard } from "../../services/clipboardService";
 
 type CopyKind = "username" | "password";
 
@@ -43,7 +44,7 @@ export function PopupCredentialList({ credentials, onOpen, onFill, fillingId = n
   const copyPassword = async (id: string) => {
     try {
       const credential = await getCredential(id);
-      await navigator.clipboard.writeText(credential.password);
+      await writePasswordToClipboard(credential.password);
       markCopied(id, "password");
     } catch {
       setErrorId(id);
