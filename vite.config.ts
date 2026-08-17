@@ -10,15 +10,19 @@ export default defineConfig({
   plugins: [
     react(),
     {
-      name: "copy-extension-manifest",
+      name: "copy-extension-release-files",
       closeBundle() {
         copyFileSync(resolve(projectRoot, "manifest.json"), resolve(projectRoot, "dist/manifest.json"));
+        copyFileSync(resolve(projectRoot, "LICENSE"), resolve(projectRoot, "dist/LICENSE"));
+        copyFileSync(resolve(projectRoot, "THIRD_PARTY_NOTICES.md"), resolve(projectRoot, "dist/THIRD_PARTY_NOTICES.md"));
       },
     },
   ],
   build: {
     outDir: "dist",
     emptyOutDir: true,
+    sourcemap: false,
+    modulePreload: { polyfill: false },
     rollupOptions: {
       input: {
         popup: resolve(projectRoot, "popup.html"),

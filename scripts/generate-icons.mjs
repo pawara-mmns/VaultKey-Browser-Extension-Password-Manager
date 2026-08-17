@@ -78,7 +78,11 @@ function blend(base, overlay) {
 }
 
 function sample(nx, ny) {
-  if (!insideRoundedRect(nx, ny, 100, 100, 22)) return [0, 0, 0, 0];
+  const artworkInset = 12.5;
+  const artworkSize = 75;
+  if (!insideRoundedRect(nx - artworkInset, ny - artworkInset, artworkSize, artworkSize, 16.5)) return [0, 0, 0, 0];
+  nx = ((nx - artworkInset) / artworkSize) * 100;
+  ny = ((ny - artworkInset) / artworkSize) * 100;
 
   const gradient = ny / 100;
   let color = [Math.round(24 - gradient * 9), Math.round(27 - gradient * 10), Math.round(36 - gradient * 15), 255];
