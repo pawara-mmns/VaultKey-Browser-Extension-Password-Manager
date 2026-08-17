@@ -101,7 +101,7 @@ export function SettingsPage() {
         <div className="settings-control-row"><div className="settings-card__icon"><Icon name="delete" size={20} /></div><div><strong>Permanently remove local VaultKey data</strong><span>This is not password recovery. Existing encrypted backup files are not deleted.</span></div><Button variant="danger" onClick={() => setDialog("reset")}>Reset Vault</Button></div>
       </section>
     </div>
-    <div className="about-row"><span>VaultKey Browser</span><span>Phase 07 · v0.7.0</span></div>
+    <div className="about-row"><span>VaultKey Browser</span><span>Version 1.0.0</span></div>
     {dialog === "change-password" && <ChangeMasterPasswordDialog onClose={() => setDialog(null)} />}
     {dialog === "backup" && <BackupDialog onClose={() => setDialog(null)} />}
     {dialog === "reset" && <ResetVaultDialog onClose={() => setDialog(null)} />}
