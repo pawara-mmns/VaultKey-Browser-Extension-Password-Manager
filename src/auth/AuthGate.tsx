@@ -3,6 +3,7 @@ import { getVaultStatus, lockVault } from "../services/vaultService";
 import { initializeStorageAccess } from "../storage/storageAccess";
 import { STORAGE_KEYS } from "../storage/storageKeys";
 import type { VaultStatus } from "../types/vault";
+import { recordActivity, scheduleAutoLock } from "../services/activityService";
 import { CreateVaultView } from "./CreateVaultView";
 import { VaultErrorView } from "./VaultErrorView";
 import { VaultLoadingView } from "./VaultLoadingView";
@@ -19,12 +20,24 @@ interface AuthGateProps {
 
 export function AuthGate({ context, children }: AuthGateProps) {
   const [status, setStatus] = useState<VaultStatus | "LOADING">("LOADING");
+  const [notice, setNotice] = useState<string | null>(null);
   const refreshSequence = useRef(0);
 
   const refreshStatus = useCallback(async () => {
     const sequence = ++refreshSequence.current;
     const nextStatus = await getVaultStatus();
-    if (sequence === refreshSequence.current) setStatus(nextStatus);
+    if (sequence === refreshSequence.current) {
+      let nextNotice: string | null = null;
+      if (nextStatus === "LOCKED") {
+        const result = await chrome.storage.session.get(STORAGE_KEYS.authNotice);
+        const storedNotice = result[STORAGE_KEYS.authNotice];
+        nextNotice = typeof storedNotice === "string" ? storedNotice : null;
+        if (nextNotice) await chrome.storage.session.remove(STORAGE_KEYS.authNotice);
+      }
+      if (sequence !== refreshSequence.current) return;
+      setNotice(nextNotice);
+      setStatus(nextStatus);
+    }
   }, []);
 
   const markUnlocked = useCallback(() => {
@@ -56,6 +69,26 @@ export function AuthGate({ context, children }: AuthGateProps) {
     };
   }, [refreshStatus]);
 
+  useEffect(() => {
+    if (status !== "UNLOCKED") return;
+    void scheduleAutoLock();
+    let lastRecorded = 0;
+    const handleActivity = () => {
+      const now = Date.now();
+      if (now - lastRecorded < 15_000) return;
+      lastRecorded = now;
+      void recordActivity();
+    };
+    window.addEventListener("pointerdown", handleActivity, { passive: true });
+    window.addEventListener("keydown", handleActivity);
+    window.addEventListener("input", handleActivity);
+    return () => {
+      window.removeEventListener("pointerdown", handleActivity);
+      window.removeEventListener("keydown", handleActivity);
+      window.removeEventListener("input", handleActivity);
+    };
+  }, [status]);
+
   const handleLock = useCallback(async () => {
     refreshSequence.current += 1;
     await lockVault();
@@ -64,7 +97,7 @@ export function AuthGate({ context, children }: AuthGateProps) {
 
   if (status === "LOADING") return <VaultLoadingView context={context} />;
   if (status === "NO_VAULT") return <CreateVaultView context={context} onCreated={markUnlocked} />;
-  if (status === "LOCKED") return <UnlockVaultView context={context} onUnlocked={markUnlocked} />;
+  if (status === "LOCKED") return <UnlockVaultView context={context} onUnlocked={markUnlocked} notice={notice} />;
   if (status === "ERROR") return <VaultErrorView context={context} />;
   return <>{children({ lock: handleLock })}</>;
 }
