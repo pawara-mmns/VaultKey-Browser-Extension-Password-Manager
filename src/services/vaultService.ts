@@ -9,7 +9,7 @@ import {
 import { generateSecureRandomBytes, generateVaultKey, unwrapVaultKey, wrapVaultKey } from "../security/crypto";
 import { bytesToBase64, base64ToBytes } from "../security/encoding";
 import { deriveMasterKey } from "../security/kdf";
-import { clearSession, createSession, isUnlocked } from "../security/session";
+import { createSession, isUnlocked } from "../security/session";
 import { readVaultConfig, saveVaultConfig } from "../storage/vaultStorage";
 import {
   VaultAlreadyExistsError,
@@ -18,6 +18,9 @@ import {
   type VaultConfig,
   type VaultStatus,
 } from "../types/vault";
+import { scheduleAutoLock } from "./activityService";
+import { lockVaultSession } from "./lockService";
+import { STORAGE_KEYS } from "../storage/storageKeys";
 
 export async function vaultExists(): Promise<boolean> {
   return (await readVaultConfig()) !== null;
@@ -48,6 +51,8 @@ export async function createVault(masterPassword: string): Promise<void> {
 
   await saveVaultConfig(config);
   await createSession(vaultKey);
+  await chrome.storage.session.remove(STORAGE_KEYS.authNotice);
+  await scheduleAutoLock();
 }
 
 export async function unlockVault(masterPassword: string): Promise<void> {
@@ -66,10 +71,12 @@ export async function unlockVault(masterPassword: string): Promise<void> {
     throw new VaultUnlockError();
   }
   await createSession(vaultKey);
+  await chrome.storage.session.remove(STORAGE_KEYS.authNotice);
+  await scheduleAutoLock();
 }
 
 export async function lockVault(): Promise<void> {
-  await clearSession();
+  await lockVaultSession("manual");
 }
 
 export async function getVaultStatus(): Promise<VaultStatus> {
