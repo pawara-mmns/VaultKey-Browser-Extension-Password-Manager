@@ -23,6 +23,7 @@ export default defineConfig({
       input: {
         popup: resolve(projectRoot, "popup.html"),
         vault: resolve(projectRoot, "vault.html"),
+        offscreen: resolve(projectRoot, "offscreen.html"),
         serviceWorker: resolve(projectRoot, "src/background/serviceWorker.ts"),
       },
       output: {
