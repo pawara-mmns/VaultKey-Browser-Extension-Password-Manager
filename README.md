@@ -2,6 +2,23 @@
 
 VaultKey Browser is a standalone, local-first password manager extension built with React, TypeScript, Vite, Manifest V3, and native Web Crypto. It has no backend, cloud account, analytics, telemetry, or runtime network dependency.
 
+## Phase 07
+
+Phase 07 adds a local security-management layer:
+
+- Persistent, validated non-secret settings under `vaultkey.settings`
+- VaultKey-activity-based Auto Lock using session timestamps and reconstructible `chrome.alarms`
+- One central cleanup path for manual lock, inactivity, master-password change, restore, and reset
+- Optional clipboard read/write permission requested only from an explicit **Enable Protection** action
+- Password clipboard protection using a SHA-256 digest and expiry in trusted session storage—never plaintext
+- Minimal offscreen clipboard document that clears only when the clipboard still matches VaultKey's digest
+- Change Master Password by re-wrapping the same random Vault Key with a fresh KDF salt and AES-GCM IV
+- Authenticated, metadata-hiding `.vkbak` backups encrypted with a backup-specific PBKDF2 salt and AES-GCM container
+- Restore validation and in-memory rollback snapshot before any current-vault replacement
+- Strong `RESET` confirmation that removes only VaultKey-owned local data
+
+Auto Lock tracks activity inside VaultKey only. It does not monitor general browsing or operating-system idle state. Backup, restore, password change, clipboard protection, and reset remain entirely local and offline.
+
 ## Phase 06
 
 Phase 06 adds controlled, user-initiated Quick Fill:
@@ -105,14 +122,17 @@ Persistent local storage contains only:
 
 - `vaultkey.vaultConfig`
 - `vaultkey.credentials` encrypted collection
+- `vaultkey.settings` validated non-sensitive security settings
 
 Session storage may contain:
 
 - `vaultkey.session` active Vault Key session
+- `vaultkey.session.lastActivityAt` inside the active session
 - `vaultkey.generatorSettings` non-secret generator preferences
+- `vaultkey.clipboardProtection` SHA-256 digest and expiry only
 - A short-lived `vaultkey.pendingCredentialPrefill` current-URL handoff, removed immediately when the Add Credential form opens
 
-Local and session storage access is restricted to trusted extension contexts where supported. The manifest requests only `storage`, `activeTab`, and `scripting`. `activeTab` is used when VaultKey is invoked to read the active HTTP/HTTPS tab URL, and `scripting` is used only after a **Fill Login** click to run the one-shot main-frame fill function. There are no static content scripts, `tabs` permission, host permissions, `<all_urls>`, remote images, favicon APIs, background autofill, automatic submit, or `chrome.storage.sync` usage.
+Local and session storage access is restricted to trusted extension contexts where supported. Required permissions are `storage`, `activeTab`, `scripting`, `alarms`, and `offscreen`; `clipboardRead` and `clipboardWrite` are optional. `activeTab` and `scripting` remain limited to explicit Quick Fill, alarms use stored timestamps as their source of truth, and the offscreen document contains only digest-based clipboard comparison/clearing logic. There are no static content scripts, `tabs`, `downloads`, `idle`, history, cookies, host permissions, `<all_urls>`, remote APIs, background autofill, automatic submit, cloud sync, analytics, or telemetry.
 
 ## Commands
 
@@ -127,4 +147,4 @@ On Windows, use `npm.cmd` if PowerShell blocks `npm.ps1`. The production extensi
 
 ## Current limitations
 
-Phase 06 intentionally does not include static content scripts, background page scanning, automatic or page-load fill, automatic submit, iframe fill, clipboard auto-clear, inactivity auto-lock, master-password changes, recovery, sync, backup, or encrypted import/export. These belong to later phases.
+Phase 07 intentionally does not include static content scripts, background page scanning, automatic or page-load fill, automatic submit, iframe fill, password recovery, cloud sync, remote backup, automatic credential capture, or breach APIs. These belong to later phases.
