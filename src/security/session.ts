@@ -15,7 +15,9 @@ export function isValidVaultSession(value: unknown): value is VaultSession {
     value.unlocked !== true ||
     !isValidBase64(value.vaultKey) ||
     typeof value.unlockedAt !== "string" ||
-    !Number.isFinite(Date.parse(value.unlockedAt))
+    !Number.isFinite(Date.parse(value.unlockedAt)) ||
+    typeof value.lastActivityAt !== "string" ||
+    !Number.isFinite(Date.parse(value.lastActivityAt))
   ) return false;
 
   try {
@@ -28,11 +30,13 @@ export function isValidVaultSession(value: unknown): value is VaultSession {
 export async function createSession(vaultKey: Uint8Array): Promise<void> {
   if (vaultKey.byteLength !== VAULT_KEY_BYTES) throw new RangeError("Vault key has an invalid length.");
 
+  const timestamp = new Date().toISOString();
   const session: VaultSession = {
     version: SESSION_FORMAT_VERSION,
     unlocked: true,
     vaultKey: bytesToBase64(vaultKey),
-    unlockedAt: new Date().toISOString(),
+    unlockedAt: timestamp,
+    lastActivityAt: timestamp,
   };
   await chrome.storage.session.set({ [STORAGE_KEYS.vaultSession]: session });
 }
@@ -59,4 +63,12 @@ export async function getActiveVaultKey(): Promise<Uint8Array> {
 
 export async function clearSession(): Promise<void> {
   await chrome.storage.session.remove(STORAGE_KEYS.vaultSession);
+}
+
+export async function updateSessionActivity(timestamp = new Date().toISOString()): Promise<VaultSession | null> {
+  const session = await getSession();
+  if (!session) return null;
+  const updated = { ...session, lastActivityAt: timestamp };
+  await chrome.storage.session.set({ [STORAGE_KEYS.vaultSession]: updated });
+  return updated;
 }
