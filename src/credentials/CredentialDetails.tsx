@@ -3,6 +3,7 @@ import { Button } from "../components/Button";
 import { Icon } from "../components/Icon";
 import { deleteCredential, getCredential } from "../services/credentialService";
 import type { DecryptedCredential } from "../types/credential";
+import { writePasswordToClipboard } from "../services/clipboardService";
 
 interface CredentialDetailsProps {
   credentialId: string;
@@ -40,7 +41,8 @@ export function CredentialDetails({ credentialId, onClose, onEdit, onDeleted }: 
 
   const copyValue = async (target: CopyTarget, value: string) => {
     try {
-      await navigator.clipboard.writeText(value);
+      if (target === "password") await writePasswordToClipboard(value);
+      else await navigator.clipboard.writeText(value);
       setCopied(target);
       if (copyTimer.current !== null) window.clearTimeout(copyTimer.current);
       copyTimer.current = window.setTimeout(() => setCopied(null), 1600);
