@@ -1,5 +1,6 @@
 node_modules/
 dist/
+*.zip
 .vite/
 .env
 .env.*
