@@ -1,80 +1,19 @@
 # VaultKey Browser
 
-VaultKey Browser is a standalone, local-first password manager extension built with React, TypeScript, Vite, Manifest V3, and native Web Crypto. It has no backend, cloud account, analytics, telemetry, or runtime network dependency.
+VaultKey Browser is a standalone, local-first password manager extension for Chromium browsers. It creates an encrypted vault in the current browser profile, generates strong passwords, organizes credentials, and fills a selected login only after an explicit user action. It has no account system, backend, cloud sync, analytics, telemetry, advertising, or runtime network dependency.
 
-## Phase 07
+## Features
 
-Phase 07 adds a local security-management layer:
-
-- Persistent, validated non-secret settings under `vaultkey.settings`
-- VaultKey-activity-based Auto Lock using session timestamps and reconstructible `chrome.alarms`
-- One central cleanup path for manual lock, inactivity, master-password change, restore, and reset
-- Optional clipboard read/write permission requested only from an explicit **Enable Protection** action
-- Password clipboard protection using a SHA-256 digest and expiry in trusted session storage—never plaintext
-- Minimal offscreen clipboard document that clears only when the clipboard still matches VaultKey's digest
-- Change Master Password by re-wrapping the same random Vault Key with a fresh KDF salt and AES-GCM IV
-- Authenticated, metadata-hiding `.vkbak` backups encrypted with a backup-specific PBKDF2 salt and AES-GCM container
-- Restore validation and in-memory rollback snapshot before any current-vault replacement
-- Strong `RESET` confirmation that removes only VaultKey-owned local data
-
-Auto Lock tracks activity inside VaultKey only. It does not monitor general browsing or operating-system idle state. Backup, restore, password change, clipboard protection, and reset remain entirely local and offline.
-
-## Phase 06
-
-Phase 06 adds controlled, user-initiated Quick Fill:
-
-- Shows a separate **Fill Login** action for each account matched to the active website
-- Re-queries and strictly revalidates the active tab and saved hostname before decrypting the selected credential
-- Decrypts only the credential selected by the user
-- Injects one self-contained function into the active tab's main frame only after the explicit click
-- Checks the page hostname again inside the injected function before touching the form
-- Selects only visible, enabled, editable login inputs using conservative signals
-- Refuses sign-up, password-change, ambiguous multi-password, unsupported, and domain-changed pages
-- Supports password-only partial success when no safe username field can be identified
-- Dispatches standard `input` and `change` events for framework compatibility
-- Never clicks buttons, submits forms, or presses Enter; the user reviews and signs in manually
-- Returns only a structured success/failure result to the extension
-
-Quick Fill has no background scanning, static content script, host permission, fill history, secret logging, or network request. Plaintext credentials exist only for the selected operation and are not written to extension or page storage.
-
-**VaultKey never automatically submits login forms.**
-
-## Phase 05 site awareness
-
-Phase 05 adds current-website awareness without accessing page content:
-
-- Reads the active tab URL only when the user invokes VaultKey
-- Normalizes HTTP/HTTPS hostnames, ports, trailing dots, and the common `www.` prefix
-- Matches saved credential hostname metadata with strict boundary-aware rules
-- Suggests exact matches before safe directional subdomain matches
-- Requires exact matching for IP addresses and localhost
-- Rejects lookalikes and suffix attacks such as `fakepaypal.com` and `paypal.com.evil.test`
-- Shows all matching accounts before generic popup search
-- Supports explicit Copy Username, Copy Password, and Open actions
-- Prefills Add Login with the current URL through a one-time session handoff that is immediately removed
-- Derives missing hostname metadata from older credentials' saved website at runtime
-
-Current URLs and hostnames are not saved as browsing history, logged, or transmitted.
-
-## Encrypted credential vault
-
-Phase 04 turns the existing authenticated vault into an encrypted credential manager:
-
-- Add, view, edit, favorite, search, and delete credentials
-- AES-GCM encryption with the existing random 256-bit Vault Key
-- Fresh random 96-bit IV for every credential create or edit
-- Versioned, purpose-bound AAD: `VaultKeyBrowser:Credential:v1:<id>:username` and `...:<id>:secret`
-- Encrypted username/email, password, and notes
-- Plaintext local metadata for service name, website, normalized hostname, favorite state, and timestamps
-- Versioned, validated records under `vaultkey.credentials` in `chrome.storage.local`
-- Metadata and locally decrypted username search without a plaintext username index
-- On-demand detail decryption, password reveal, and explicit username/password copy
-- Generator **Save to vault** flow that transfers the current generated password in React memory only
-- Live Dashboard counts, recent credentials, Favorites, full Vault list, and compact popup access
-- Cross-context refresh through `chrome.storage.onChanged`
-- Isolated handling for malformed or AES-GCM-authentication-failing records
-
-The Phase 02 authentication architecture and Phase 03 password generator remain active.
+- Encrypted credential storage for usernames, passwords, and notes
+- Secure password generation with configurable length and character groups
+- Search, favorites, recent items, editing, deletion, and per-item reveal/copy actions
+- Current-site suggestions using strict, boundary-aware hostname matching
+- Explicit Quick Fill with no background scanning or automatic submission
+- Activity-based Auto Lock inside VaultKey
+- Optional clear-if-unchanged clipboard protection
+- Master-password changes without decrypting and re-encrypting every credential
+- Password-protected, metadata-hiding local `.vkbak` backups
+- Local reset with a strong confirmation step
 
 ## Security architecture
 
@@ -82,59 +21,35 @@ The Phase 02 authentication architecture and Phase 03 password generator remain 
 Master password
     └─ PBKDF2-HMAC-SHA-256 + random salt (600,000 iterations)
          └─ AES-GCM Key Encryption Key
-              └─ unwraps random 256-bit Vault Key
-                   └─ AES-GCM encrypts credential secret + fresh 96-bit IV + credential AAD
+              └─ unwraps a random 256-bit Vault Key
+                   └─ AES-GCM encrypts credential data with fresh IVs and purpose-bound AAD
 ```
 
-The master password and Key Encryption Key are never stored. The raw Vault Key is never persistent; its Base64 session representation exists only under `vaultkey.session` in trusted-context `chrome.storage.session` while unlocked and is removed on manual lock.
+The master password and derived Key Encryption Key are never stored. The random Vault Key is wrapped at rest and exists in trusted extension session storage only while the vault is unlocked. Each credential uses fresh 96-bit AES-GCM IVs. Username data is encrypted separately from password and notes so list views do not need to decrypt passwords.
 
-Each stored credential has this shape:
+Persistent local metadata includes service name, website, normalized hostname, favorite state, and timestamps. This supports local organization and site matching without decrypting all secret fields. There is no password recovery mechanism; losing the master password and all usable backups means losing access to the encrypted vault.
 
-```text
-id
-version
-metadata.serviceName          plaintext local metadata
-metadata.website             plaintext local metadata
-metadata.hostname            plaintext local metadata for future domain matching
-metadata.favorite            plaintext, so toggling does not re-encrypt secrets
-metadata.createdAt/updatedAt plaintext timestamps
-encrypted.username.algorithm   AES-GCM
-encrypted.username.iv          Base64, fresh for each username encryption
-encrypted.username.ciphertext  authenticated username ciphertext
-encrypted.secret.algorithm     AES-GCM
-encrypted.secret.iv            Base64, fresh for each password/notes encryption
-encrypted.secret.ciphertext    authenticated password/notes ciphertext
-```
+## Local-first privacy
 
-Username is encrypted separately from the password/notes secret payload. This lets lists and search decrypt only username summaries without decrypting passwords in advance. Those values are never duplicated into plaintext metadata. Credential details, edit, and copy decrypt only the selected record.
+Vault data stays in `chrome.storage.local` in the current browser profile. Unlocked session material stays in trusted `chrome.storage.session`. VaultKey does not send credentials, browsing activity, or usage data to a developer or third party. It does not use remote APIs or load remote code.
 
-Malformed records are skipped without crashing the rest of the vault. A record that fails AES-GCM authentication remains stored and is shown as unreadable; VaultKey does not silently delete it.
+Uninstalling the extension or clearing its extension storage may permanently remove the local vault. Create and verify an encrypted backup before uninstalling, resetting the browser profile, or moving to another device.
 
-## Password generator
+See [PRIVACY.md](PRIVACY.md) for the complete data-handling statement.
 
-The generator uses `crypto.getRandomValues`, rejection sampling, and a secure Fisher–Yates shuffle. It supports lengths from 8–64, category guarantees, ambiguous-character exclusion, entropy estimates, and five strength levels.
+## Quick Fill
 
-Generated passwords remain in React/runtime memory only. Generator preferences are stored separately under `vaultkey.generatorSettings` in `chrome.storage.session`. **Save to vault** pre-fills the Add Credential form without writing the generated value to storage; encryption occurs only when the user saves.
+Quick Fill runs only after the user opens VaultKey and chooses **Fill Login** for a credential matched to the active HTTP or HTTPS hostname. VaultKey then revalidates the active tab and saved hostname, decrypts only the selected credential, and injects one self-contained function into the main frame.
 
-## Storage and permissions
+The injected function conservatively selects visible, editable login fields. It refuses sign-up, password-change, ambiguous multi-password, unsupported, and hostname-changed pages. It never clicks a button, submits a form, presses Enter, scans pages in the background, or persists fill history. The user reviews the result and signs in manually.
 
-Persistent local storage contains only:
+## Installation
 
-- `vaultkey.vaultConfig`
-- `vaultkey.credentials` encrypted collection
-- `vaultkey.settings` validated non-sensitive security settings
+Chrome Web Store publication is prepared but requires publisher-controlled listing and privacy-policy URLs. For local installation, build and load the unpacked extension as described below.
 
-Session storage may contain:
+## Development
 
-- `vaultkey.session` active Vault Key session
-- `vaultkey.session.lastActivityAt` inside the active session
-- `vaultkey.generatorSettings` non-secret generator preferences
-- `vaultkey.clipboardProtection` SHA-256 digest and expiry only
-- A short-lived `vaultkey.pendingCredentialPrefill` current-URL handoff, removed immediately when the Add Credential form opens
-
-Local and session storage access is restricted to trusted extension contexts where supported. Required permissions are `storage`, `activeTab`, `scripting`, `alarms`, and `offscreen`; `clipboardRead` and `clipboardWrite` are optional. `activeTab` and `scripting` remain limited to explicit Quick Fill, alarms use stored timestamps as their source of truth, and the offscreen document contains only digest-based clipboard comparison/clearing logic. There are no static content scripts, `tabs`, `downloads`, `idle`, history, cookies, host permissions, `<all_urls>`, remote APIs, background autofill, automatic submit, cloud sync, analytics, or telemetry.
-
-## Commands
+Requirements: a current Node.js version supported by Vite 7 and npm.
 
 ```bash
 npm install
@@ -143,8 +58,76 @@ npm run typecheck
 npm run build
 ```
 
-On Windows, use `npm.cmd` if PowerShell blocks `npm.ps1`. The production extension is emitted to `dist/`; load that directory from `chrome://extensions` using **Load unpacked**.
+On Windows, use `npm.cmd` if PowerShell blocks `npm.ps1`.
 
-## Current limitations
+## Build and load unpacked
 
-Phase 07 intentionally does not include static content scripts, background page scanning, automatic or page-load fill, automatic submit, iframe fill, password recovery, cloud sync, remote backup, automatic credential capture, or breach APIs. These belong to later phases.
+1. Run `npm run build`.
+2. Open `chrome://extensions` in Chrome.
+3. Enable **Developer mode**.
+4. Select **Load unpacked**.
+5. Choose the generated `dist/` directory.
+
+The production build disables source maps and contains only runtime extension assets plus required license notices.
+
+## Permissions
+
+Required permissions are deliberately limited:
+
+- `storage` — stores the encrypted vault, non-secret metadata/settings, and unlocked session state locally.
+- `activeTab` — reads the current tab URL only when the user invokes VaultKey and grants temporary access for explicit Quick Fill.
+- `scripting` — injects the one-time Quick Fill function after the user selects an account.
+- `alarms` — schedules Auto Lock and optional clipboard expiry work.
+- `offscreen` — provides the minimal extension document needed to compare and clear an unchanged clipboard value.
+
+Optional `clipboardRead` and `clipboardWrite` permissions are requested only when the user explicitly enables clipboard protection. VaultKey has no host permissions, static content scripts, `tabs`, history, cookies, downloads, or `<all_urls>` access.
+
+See [docs/PERMISSIONS.md](docs/PERMISSIONS.md) for the detailed permission rationale.
+
+## Backup and restore
+
+**Create Encrypted Backup** exports the full persistent vault as a password-protected `.vkbak` file. The backup uses a backup-specific PBKDF2 salt and authenticated AES-GCM encryption, hiding credential metadata as well as secret fields.
+
+Restore parses, validates, and decrypts the complete backup before replacing current local data. VaultKey keeps an in-memory rollback snapshot during replacement. Backups remain the user's responsibility: store them securely, keep more than one known-good copy, and verify the password before relying on a backup.
+
+## Security limitations
+
+- Security depends on the strength and secrecy of the master password and backup passwords.
+- An unlocked browser profile, compromised operating system, malicious browser, or privileged extension may observe data while it is being used.
+- Quick Fill operates on page fields selected with conservative heuristics; users must verify the destination and form before signing in.
+- Auto Lock measures activity inside VaultKey, not operating-system idle time or general browsing activity.
+- Clipboard protection is optional and cannot prevent another application from reading the clipboard before expiry.
+- Website and service metadata remain plaintext in local extension storage to support organization and matching; usernames, passwords, and notes are encrypted.
+- VaultKey does not provide breach monitoring, password recovery, cloud backup, automatic credential capture, iframe filling, or automatic form submission.
+
+Please report suspected vulnerabilities privately according to [SECURITY.md](SECURITY.md).
+
+## Project structure
+
+```text
+src/auth/          vault creation, unlock, and lock-gate UI
+src/background/    Manifest V3 service worker
+src/content/       isolated, user-triggered Quick Fill function
+src/credentials/   credential management UI
+src/generator/     password-generator state and controls
+src/pages/         full-vault application pages
+src/popup/         extension popup application
+src/security/      cryptography, KDF, session, and generator primitives
+src/services/      vault, credential, fill, settings, backup, and lock workflows
+src/storage/       local/session storage boundaries and validation
+src/vault/         full-vault application shell
+docs/              store, permissions, release, and audit documentation
+scripts/           deterministic icon generation
+```
+
+## License
+
+VaultKey Browser is licensed under the Apache License 2.0.
+Copyright 2026 Pawara Samarawickrama.
+See the `LICENSE` file for details.
+
+React, ReactDOM, and Scheduler are included under the MIT License; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+## Disclaimer
+
+VaultKey Browser is provided on an “AS IS” basis, without warranties or conditions of any kind. Review the source and assess whether it meets your security, legal, compliance, and backup requirements before relying on it for sensitive credentials.
