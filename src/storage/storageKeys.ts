@@ -4,4 +4,7 @@ export const STORAGE_KEYS = {
   generatorSettings: "vaultkey.generatorSettings",
   credentials: "vaultkey.credentials",
   pendingCredentialPrefill: "vaultkey.pendingCredentialPrefill",
+  settings: "vaultkey.settings",
+  clipboardProtection: "vaultkey.clipboardProtection",
+  authNotice: "vaultkey.authNotice",
 } as const;

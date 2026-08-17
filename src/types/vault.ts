@@ -19,7 +19,10 @@ export interface VaultSession {
   unlocked: true;
   vaultKey: string;
   unlockedAt: string;
+  lastActivityAt: string;
 }
+
+export type LockReason = "manual" | "inactivity" | "master-password-change" | "restore" | "reset";
 
 export type VaultStatus = "NO_VAULT" | "LOCKED" | "UNLOCKED" | "ERROR";
 
