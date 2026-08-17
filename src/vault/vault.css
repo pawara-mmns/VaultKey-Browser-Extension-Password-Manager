@@ -719,6 +719,28 @@ body,
   font-size: 10px;
 }
 
+.settings-management { display: flex; flex-direction: column; gap: 16px; }
+.settings-group { overflow: hidden; }
+.settings-control-row { position: relative; display: grid; min-height: 86px; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); }
+.settings-control-row:last-child { border-bottom: 0; }
+.settings-control-row > div:nth-child(2) { display: flex; min-width: 0; flex-direction: column; gap: 5px; }
+.settings-control-row strong { font-size: 12px; }
+.settings-control-row span { color: var(--text-muted); font-size: 10px; line-height: 1.5; }
+.settings-control-row select { min-width: 145px; height: 39px; padding: 0 34px 0 11px; border: 1px solid var(--border); border-radius: 9px; outline: none; background: var(--bg-input); color: var(--text-primary); font-size: 11px; }
+.settings-control-row select:focus { border-color: var(--primary-hover); box-shadow: var(--focus-ring); }
+.settings-permission-note { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 14px 20px; background: var(--primary-soft); }
+.settings-permission-note > svg { color: var(--primary-hover); }
+.settings-permission-note p { color: var(--text-secondary); font-size: 10px; line-height: 1.5; }
+.settings-group--danger { border-color: var(--danger-border); }
+.settings-group--danger .eyebrow, .settings-group--danger .settings-card__icon { color: var(--danger); }
+.settings-feedback, .settings-success { margin-bottom: 16px; padding: 11px 13px; border: 1px solid var(--success-border); border-radius: 10px; background: var(--success-soft); color: var(--success); font-size: 11px; line-height: 1.5; }
+.settings-dialog .strength-meter { margin-top: -4px; }
+.restore-confirmation { padding: 18px; border: 1px solid var(--danger-border); border-radius: 12px; background: var(--danger-soft); }
+.restore-confirmation > svg { margin-bottom: 12px; color: var(--danger); }
+.restore-confirmation h3 { margin-bottom: 8px; font-size: 17px; }
+.restore-confirmation p { margin-bottom: 18px; color: var(--text-secondary); font-size: 11px; line-height: 1.6; }
+.restore-confirmation > div:last-child { display: flex; justify-content: flex-end; gap: 9px; }
+
 .settings-card__value {
   display: flex;
   align-items: flex-end;

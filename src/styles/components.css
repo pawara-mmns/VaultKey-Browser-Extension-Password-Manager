@@ -579,6 +579,34 @@ input:has(+ .field__trailing) {
   line-height: 1.4;
 }
 
+.auth-form__notice {
+  padding: 10px 12px;
+  border: 1px solid var(--success-border);
+  border-radius: 9px;
+  background: var(--success-soft);
+  color: var(--success);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.locked-reset-link { display: block; margin: 15px auto 0; border: 0; background: transparent; color: var(--text-muted); cursor: pointer; font-size: 9px; text-decoration: underline; text-underline-offset: 3px; }
+.locked-reset { margin-top: 15px; padding: 12px; border: 1px solid var(--danger-border); border-radius: 10px; background: var(--danger-soft); }
+.locked-reset strong { font-size: 11px; }
+.locked-reset > p { margin: 5px 0 10px; color: var(--text-secondary); font-size: 9px; line-height: 1.45; }
+.locked-reset .field { margin-bottom: 9px; }
+.locked-reset > div { display: flex; justify-content: flex-end; gap: 7px; }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 .field__control input[aria-invalid="true"] {
   border-color: var(--danger);
 }
