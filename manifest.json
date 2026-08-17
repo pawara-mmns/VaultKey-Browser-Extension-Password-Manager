@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "VaultKey Browser",
-  "version": "0.7.0",
-  "description": "A standalone local-first password manager browser extension.",
+  "version": "1.0.0",
+  "description": "A local-first password manager that securely stores, generates, and fills credentials directly in your browser.",
   "permissions": [
     "storage",
     "activeTab",
