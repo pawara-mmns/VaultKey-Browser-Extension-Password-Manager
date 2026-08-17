@@ -44,6 +44,10 @@ beforeEach(() => {
       local: localArea,
       session: sessionArea,
     },
+    alarms: {
+      create: vi.fn(async () => undefined),
+      clear: vi.fn(async () => true),
+    },
   });
 });
 
