@@ -43,9 +43,9 @@ export function SecurityPage() {
         <section className="security-hero">
           <div className="security-hero__icon"><Icon name="shield" size={30} /></div>
           <div>
-            <span className="eyebrow">Phase 07 status</span>
+            <span className="eyebrow">Protection status</span>
             <h2>Local security management active</h2>
-            <p>Timestamp-based Auto Lock, optional clear-if-unchanged clipboard protection, Vault Key re-wrapping, and encrypted local backups now protect the vault lifecycle.</p>
+            <p>Timestamp-based Auto Lock, optional clear-if-unchanged clipboard protection, Vault Key re-wrapping, and encrypted local backups protect the vault lifecycle.</p>
           </div>
         </section>
         <section className="content-card security-list">
