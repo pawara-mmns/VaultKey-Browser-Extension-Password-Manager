@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { PasswordVisibilityButton } from "../auth/PasswordVisibilityButton";
 import { Button } from "../components/Button";
 import { Icon } from "../components/Icon";
@@ -11,12 +11,56 @@ import { VaultUnlockError } from "../types/vault";
 import type { VaultKeyBackupPayloadV1 } from "../types/backup";
 
 function SecurityDialog({ title, description, onClose, children }: { title: string; description: string; onClose: () => void; children: ReactNode }) {
+  const panelRef = useRef<HTMLElement>(null);
+  const titleId = useId();
+  const descriptionId = useId();
+
+  useEffect(() => {
+    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const panel = panelRef.current;
+    const getFocusable = () => Array.from(panel?.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ) ?? []).filter((element) => !element.hasAttribute("hidden"));
+    const focusFrame = window.requestAnimationFrame(() => {
+      if (!panel?.contains(document.activeElement)) getFocusable()[0]?.focus();
+    });
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = getFocusable();
+      if (focusable.length === 0) {
+        event.preventDefault();
+        panel?.focus();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      document.removeEventListener("keydown", handleKeyDown);
+      previouslyFocused?.focus();
+    };
+  }, [onClose]);
+
   return (
-    <div className="credential-modal" role="dialog" aria-modal="true" aria-label={title}>
+    <div className="credential-modal" role="dialog" aria-modal="true" aria-labelledby={titleId} aria-describedby={descriptionId}>
       <button className="credential-modal__backdrop" type="button" aria-label="Close dialog" onClick={onClose} />
-      <section className="credential-modal__panel settings-dialog">
+      <section ref={panelRef} className="credential-modal__panel settings-dialog" tabIndex={-1}>
         <button className="icon-button credential-modal__close" type="button" aria-label="Close" onClick={onClose}><Icon name="add" size={20} /></button>
-        <div className="credential-modal__heading"><span className="eyebrow">Security management</span><h2>{title}</h2><p>{description}</p></div>
+        <div className="credential-modal__heading"><span className="eyebrow">Security management</span><h2 id={titleId}>{title}</h2><p id={descriptionId}>{description}</p></div>
         {children}
       </section>
     </div>
